@@ -58,7 +58,7 @@ double d2polyeval(const vector<double> &coeffs, double x) {
 // Fit a polynomial.
 // Adapted from
 // https://github.com/JuliaMath/Polynomials.jl/blob/master/src/Polynomials.jl#L676-L716
-vector<double> polyfit(const vector<double> &xvals, vector<double> &yvals, int order) {
+vector<double> polyfit(const vector<double> &xvals, const vector<double> &yvals, int order) {
   assert(xvals.size() == yvals.size());
   assert(order >= 1 && order <= xvals.size() - 1);
 
@@ -73,10 +73,18 @@ vector<double> polyfit(const vector<double> &xvals, vector<double> &yvals, int o
     }
   }
 
+	Eigen::VectorXd yvals_xd(yvals.size());
+	for (int i = 0; i < yvals.size(); i++) {
+		yvals_xd(i) = yvals[i];
+	}
+
   auto Q = A.householderQr();
-  auto result_xd = Q.solve(Eigen::Map<Eigen::VectorXd>(yvals.data(), yvals.size()));
+  auto result_xd = Q.solve(yvals_xd);
+  
   vector<double> result(result_xd.size());
-  Eigen::Map<Eigen::VectorXd>(result.data(), result.size()) = result_xd;
+  for (int i = 0; i < result.size()) {
+  	result[i] = result_xd(i);
+  }
   return result;
 }
 
@@ -140,13 +148,13 @@ int main(int argc, char *argv[]) {
           double x_center = ptsx[ptsx.size() / 2];
           double radius = pow(1 + pow(dpolyeval(coeffs, x_center), 2), 1.5) / abs(d2polyeval(coeffs, x_center));
 
-          //printf("STATE: x=%8f y=%8f psi=%8f v=%8f cte=%8f epsi=%8f r=%8f\n", px, py, psi, v, cte, epsi, radius);
+          printf("STATE: x=%8f y=%8f psi=%8f v=%8f cte=%8f epsi=%8f r=%8f\n", px, py, psi, v, cte, epsi, radius);
 
           auto state = {px, py, psi, v, cte, epsi, radius};
 
           if (mpc.solve(state, coeffs)) {
 
-            printf("steering=%8f throttle=%8f\n", mpc.steering_value, mpc.throttle_value);
+            printf("ACTUATORS: steering=%8f throttle=%8f\n", mpc.steering_value, mpc.throttle_value);
 
             json msgJson;
             // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -177,7 +185,10 @@ int main(int argc, char *argv[]) {
             // SUBMITTING.
             chrono::duration<double> elapsed = chrono::high_resolution_clock::now() - start;
             auto final_latency = chrono::duration<double>(LATENCY) - elapsed;
-            printf("Elapsed: %.3fs Latency: %.3fs\n", elapsed.count(), final_latency.count());
+            printf("Elapsed: %.3fs Wait: %.3fs Latency: %.3fs\n", 
+            	elapsed.count(), 
+            	final_latency.count(), 
+            	elapsed.count() + final_latency.count());
             if (final_latency.count() > 0) {
               this_thread::sleep_for(final_latency);
             }
