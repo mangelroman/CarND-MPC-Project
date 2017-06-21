@@ -56,6 +56,7 @@ The MPC drives a vehicle on a predefined trajectory by solving an optimization p
 0 ≤ **g<sub>6</sub>(state, actuators)** = eψ<sub>​t+1</sub> - eψ<sub>t</sub> + v<sub>t</sub> δ<sub>t</sub> Δt / L<sub>f</sub> ≤ 0
 
 -25<sup>o</sup> ≤ **g<sub>7</sub>(state, actuators)** = δ ≤ 25<sup>o</sup>
+
 -1.0 ≤ **g<sub>8</sub>(state, actuators)** = α ≤ 1.0
 
 ## Hyperparameters
