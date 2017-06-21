@@ -14,22 +14,29 @@ Self-Driving Car Engineer Nanodegree Program
 The implementation of the MPC (Model Predictive Control) in the car simulator is using the following Kinematic model, which does not account for tire lateral and longitudinal forces:
 
 x<sub>​t+1</sub> = x<sub>t</sub> + v<sub>t</sub> cos(ψ<sub>t</sub>) Δt
+
 y<sub>​t+1</sub> = y<sub>t</sub> + v<sub>t</sub> sin(ψ<sub>t</sub>) Δt
+
 ψ<sub>​t+1</sub> = ψ<sub>t</sub> + v<sub>t</sub> δ<sub>t</sub> Δt / L<sub>f</sub>
+
 v<sub>​t+1</sub> = v<sub>t</sub> + α<sub>t</sub> Δt
 
 state = {x, y, ψ, v}
+
 actuators = {δ, α}
 
 In order to measure how well the car is driving within the planned trajectory, we add to the state the following two new variables:
 
 cte = cross-track error
+
 eψ = ψ angle error
 
 cte<sub>​t+1</sub> = cte<sub>t</sub> + v<sub>t</sub> sin(eψ<sub>t</sub>) Δt
+
 eψ<sub>​t+1</sub> = eψ<sub>t</sub> + v<sub>t</sub> δ<sub>t</sub> Δt / L<sub>f</sub>
 
 state = {x, y, ψ, v, cte, eψ}
+
 actuators = {δ, α}
 
 The MPC drives a vehicle on a predefined trajectory by solving an optimization problem of predicted states over a time period. This optimization problem finds the actuator values that minimize a given cost function f given some variable constraints expressed in several g functions.
@@ -37,11 +44,17 @@ The MPC drives a vehicle on a predefined trajectory by solving an optimization p
 **f(cte, eψ, v, δ, α)** = w<sub>cte</sub> cte<sup>2</sup> + w<sub>eψ</sub> eψ<sup>2</sup> + w<sub>v</sub> (v-v<sub>ref</sub>)<sup>2</sup> + w<sub>δ</sub> v δ<sup>2</sup> + w<sub>α</sub> α<sup>2</sup> + w<sub>Δδ</sub> Δδ<sup>2</sup> + w<sub>Δα</sub> Δα<sup>2</sup> + w<sub>Δcte</sub> Δcte<sup>2</sup>
 
 0 ≤ **g<sub>1</sub>(state, actuators)** = x<sub>​t+1</sub> - x<sub>t</sub> + v<sub>t</sub> cos(ψ<sub>t</sub>) Δt ≤ 0
+
 0 ≤ **g<sub>2</sub>(state, actuators)** = y<sub>​t+1</sub> - y<sub>t</sub> + v<sub>t</sub> sin(ψ<sub>t</sub>) Δt ≤ 0
+
 0 ≤ **g<sub>3</sub>(state, actuators)** = ψ<sub>​t+1</sub> - ψ<sub>t</sub> + v<sub>t</sub> δ<sub>t</sub> Δt / L<sub>f</sub> ≤ 0
+
 0 ≤ **g<sub>4</sub>(state, actuators)** = v<sub>​t+1</sub> - v<sub>t</sub> + α<sub>t</sub> Δt ≤ 0
+
 0 ≤ **g<sub>5</sub>(state, actuators)** = cte<sub>​t+1</sub> - cte<sub>t</sub> + v<sub>t</sub> sin(eψ<sub>t</sub>) Δt ≤ 0
+
 0 ≤ **g<sub>6</sub>(state, actuators)** = eψ<sub>​t+1</sub> - eψ<sub>t</sub> + v<sub>t</sub> δ<sub>t</sub> Δt / L<sub>f</sub> ≤ 0
+
 -25<sup>o</sup> ≤ **g<sub>7</sub>(state, actuators)** = δ ≤ 25<sup>o</sup>
 -1.0 ≤ **g<sub>8</sub>(state, actuators)** = α ≤ 1.0
 
@@ -60,17 +73,21 @@ Another important parameter in our model is the reference velocity used at the c
 ![alt text](./img/VrefEqn.gif "Reference velocity Equation")
 
 Which bring the following new parameters to our model, tuned-up for the racing configurations:
+
 | v<sub>max</sub> = 120mph | v<sub>min</sub> = 75mph | r<sub>max</sub> = 50m | r<sub>min</sub> = 30m |
 
 And for the comfort configuration:
+
 | v<sub>max</sub> = 100mph | v<sub>min</sub> = 55mph | r<sub>max</sub> = 60m | r<sub>min</sub> = 35m |
 
 And last but not least, we have the weights of the cost function as parameters of the model. They indicate to the optimization algorithm which variables are more important to keep low while finding the solution.
 
 These are the final values for the racing configuration:
+
 | w<sub>cte</sub> = 2 | w<sub>eψ</sub> = 12 | w<sub>v</sub> = 1 | w<sub>δ</sub> = 1250 | w<sub>α</sub> = 1 | w<sub>Δcte</sub> = 1 | w<sub>Δδ</sub> = 10 | w<sub>Δα</sub> = 1 |
 
 And these are the final values for the comfort configuration:
+
 | w<sub>cte</sub> = 3 | w<sub>eψ</sub> = 15 | w<sub>v</sub> = 1 | w<sub>δ</sub> = 1000 | w<sub>α</sub> = 1 | w<sub>Δcte</sub> = 1 | w<sub>Δδ</sub> = 20 | w<sub>Δα</sub> = 1 |
 
 Please note from the cost function that w<sub>δ</sub> is multiplied by the current velocity to ensure the steering angle decreases as the vehicle speeds up.
