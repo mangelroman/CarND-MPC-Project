@@ -2,6 +2,7 @@
 #define MPC_H
 
 #include <vector>
+#include <string>
 
 class MPC {
   public:
