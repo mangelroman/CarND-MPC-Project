@@ -80,9 +80,9 @@ vector<double> polyfit(const vector<double> &xvals, const vector<double> &yvals,
 
   auto Q = A.householderQr();
   auto result_xd = Q.solve(yvals_xd);
-  
+
   vector<double> result(result_xd.size());
-  for (int i = 0; i < result.size()) {
+  for (int i = 0; i < result.size(); i++) {
   	result[i] = result_xd(i);
   }
   return result;
@@ -185,9 +185,9 @@ int main(int argc, char *argv[]) {
             // SUBMITTING.
             chrono::duration<double> elapsed = chrono::high_resolution_clock::now() - start;
             auto final_latency = chrono::duration<double>(LATENCY) - elapsed;
-            printf("Elapsed: %.3fs Wait: %.3fs Latency: %.3fs\n", 
-            	elapsed.count(), 
-            	final_latency.count(), 
+            printf("Elapsed: %.3fs Wait: %.3fs Latency: %.3fs\n",
+            	elapsed.count(),
+            	final_latency.count(),
             	elapsed.count() + final_latency.count());
             if (final_latency.count() > 0) {
               this_thread::sleep_for(final_latency);

@@ -75,17 +75,17 @@ Another important parameter in our model is the reference velocity used at the c
 
 Which bring the following new parameters to our model, tuned-up for the racing configurations:
 
-| v<sub>max</sub> = 120mph | v<sub>min</sub> = 75mph | r<sub>max</sub> = 50m | r<sub>min</sub> = 30m |
+| v<sub>max</sub> = 120mph | v<sub>min</sub> = 80mph | r<sub>max</sub> = 65m | r<sub>min</sub> = 35m |
 
 And for the comfort configuration:
 
-| v<sub>max</sub> = 100mph | v<sub>min</sub> = 55mph | r<sub>max</sub> = 60m | r<sub>min</sub> = 35m |
+| v<sub>max</sub> = 100mph | v<sub>min</sub> = 55mph | r<sub>max</sub> = 65m | r<sub>min</sub> = 35m |
 
 And last but not least, we have the weights of the cost function as parameters of the model. They indicate to the optimization algorithm which variables are more important to keep low while finding the solution.
 
 These are the final values for the racing configuration:
 
-| w<sub>cte</sub> = 2 | w<sub>eψ</sub> = 12 | w<sub>v</sub> = 1 | w<sub>δ</sub> = 1250 | w<sub>α</sub> = 1 | w<sub>Δcte</sub> = 1 | w<sub>Δδ</sub> = 10 | w<sub>Δα</sub> = 1 |
+| w<sub>cte</sub> = 2 | w<sub>eψ</sub> = 12 | w<sub>v</sub> = 1 | w<sub>δ</sub> = 1450 | w<sub>α</sub> = 1 | w<sub>Δcte</sub> = 1 | w<sub>Δδ</sub> = 10 | w<sub>Δα</sub> = 1 |
 
 And these are the final values for the comfort configuration:
 
@@ -108,6 +108,16 @@ In order to apply a particular latency to the model, we follow these steps:
 3. We measure the time it takes to make all the MPC computations, and we subtract that time from the latency period (100ms) in order to emulate latency as much accurate as possible.
 
 This approach seems to work well when dealing with latency and drawing the desired and predicted trajectories in the screen.
+
+## Videos
+Racing Configuration:
+
+[![alt text](https://img.youtube.com/vi/lSQzZZIc528/0.jpg)](https://youtu.be/lSQzZZIc528)
+
+Comfort Configuration:
+
+[![alt text](https://img.youtube.com/vi/yYkk5Fkhvnw/0.jpg)](https://youtu.be/yYkk5Fkhvnw)
+
 
 ## Dependencies
 
